@@ -4,10 +4,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:design_mapping/widgets/apply_button.dart';
-import 'package:design_mapping/pages/password.dart';
 
-class Login extends StatelessWidget {
-  const Login({super.key});
+
+
+class Password extends StatelessWidget {
+  const Password({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +19,8 @@ class Login extends StatelessWidget {
       Positioned(child: IgnorePointer(
         child: SizedBox(
          child:  SvgPicture.asset(
-            'assets/images/login_bubbles.svg',
-            fit: BoxFit.cover,
+            'assets/images/password_bubbles.svg',
+            fit: BoxFit.contain,
             alignment: Alignment.topLeft,
           ),
         )
@@ -27,47 +28,40 @@ class Login extends StatelessWidget {
 
     SafeArea(
       child: Container(
-         padding: EdgeInsets.only(left: 20.w, top: 438.h),
+         padding: EdgeInsets.only(top: 282.h),
          child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
            children: [
              Text(
-              "Login",
+              "Hello!",
                 style: GoogleFonts.raleway(
                   fontWeight: FontWeight.w700,
-                  fontSize: 50.sp,
-                  height: 1.08.h,
+                  fontSize: 28.sp,
+                  height: 1.28.h,
                 ),
               ),
               SizedBox(height: 22.h ,),
-              Row(
-                children: [
-                  Text(
-                  "Good to see you back!",
+              Text(
+                  "Type your password",
                     style: GoogleFonts.nunitoSans(
                       fontWeight: FontWeight.w300,
                       fontSize: 19.sp,
                       height: 1.08.h,
                     ),
                   ),
-                  SizedBox(width: 10.2.w,),
-                  SvgPicture.asset('assets/images/heart.svg',
-                  width: 15.93.h, height: 15.32.w, )
-                ],
-              ),
            ],
          ),
       ),
     ),
 
 SafeArea(child: Container(
-      margin: EdgeInsets.only(top: 555.08.h, left: 21.w),
+      margin: EdgeInsets.only(top: 509.h, left: 21.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppTextField(hint: 'Email'),
-          SizedBox(height: 36.7.w),
-          DoneButton(onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (context) => Password())); }, label: "LogIn"),
+          AppTextField(hint: 'Password'),
+          SizedBox(height: 82.63.w),
+          DoneButton(onPressed: () {}, label: "Start"),
           SizedBox(height: 14.h,),
           Padding(
             padding: EdgeInsets.only(left: 145.w),
@@ -94,8 +88,3 @@ SafeArea(child: Container(
     );
   }
 }
-
-
-
-
-

@@ -55,7 +55,7 @@ class DesignMapping extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return const Scaffold(
-      body: Login(),
+      body: Register(),
     );
   }
 }

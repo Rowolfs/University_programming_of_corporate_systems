@@ -6,8 +6,8 @@ import 'package:design_mapping/widgets/app_text_field.dart';
 import 'package:design_mapping/widgets/apply_button.dart';
 import 'package:design_mapping/pages/login.dart';
 
-class Login extends StatelessWidget {
-  const Login({super.key});
+class Register extends StatelessWidget {
+  const Register({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class Login extends StatelessWidget {
             child: IgnorePointer(
               child: SizedBox(
                 child: SvgPicture.asset(
-                  'assets/images/bubbles.svg',
+                  'assets/images/register_bubbles.svg',
                   fit: BoxFit.contain,
                   alignment: Alignment.topLeft,
                 ),
@@ -96,7 +96,7 @@ Container(
 ),
     Padding(
     padding: EdgeInsets.only(top: 28.h, left: 20.w, right: 20.w),
-    child: DoneButton(
+    child: DoneButton( label: "Done",
       onPressed: () { Navigator.push(context,MaterialPageRoute(builder: (context) => Login()));
       },
     ),
