@@ -40,7 +40,7 @@ class Password extends StatelessWidget {
                   height: 1.28.h,
                 ),
               ),
-              SizedBox(height: 22.h ,),
+              SizedBox(height: 30.h ,),
               Text(
                   "Type your password",
                     style: GoogleFonts.nunitoSans(
