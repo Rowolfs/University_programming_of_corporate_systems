@@ -64,7 +64,12 @@ flutter:
     - assets/images/russian_flag.png
     - assets/images/login_bubbles.svg
     - assets/images/heart.svg
-    - assets/images/
+    - assets/images/home.svg
+    - assets/images/heart_blue.svg
+    - assets/images/home.svg
+    - assets/images/shopping_cart.svg
+    - assets/images/password_bubbles.svg
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

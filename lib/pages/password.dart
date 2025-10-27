@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:design_mapping/widgets/apply_button.dart';
+import 'package:design_mapping/pages/home.dart';
 
 
 
@@ -61,7 +62,7 @@ SafeArea(child: Container(
         children: [
           AppTextField(hint: 'Password'),
           SizedBox(height: 82.63.w),
-          DoneButton(onPressed: () {}, label: "Start"),
+          DoneButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Home(), )), label: "Start"),
           SizedBox(height: 14.h,),
           Padding(
             padding: EdgeInsets.only(left: 145.w),
