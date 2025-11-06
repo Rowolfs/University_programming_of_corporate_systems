@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "19759420718",
+    "project_id": "roma-note-app",
+    "storage_bucket": "roma-note-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19759420718:android:d202fc375d11fb8b12d6bf",
+        "android_client_info": {
+          "package_name": "com.example.notes_list_example"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbOD7Tt3PpI8avd4uTHzKUNVW_Wvr7GkU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
