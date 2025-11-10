@@ -1,76 +1,57 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final supabase = Supabase.instance.client;
 
 class NotesPage extends StatefulWidget {
-  const NotesPage({super.key});
+  final String userId; 
+  const NotesPage({super.key, required this.userId});
   @override
   State<NotesPage> createState() => _NotesPageState();
 }
 
 class _NotesPageState extends State<NotesPage> {
-  final _db = FirebaseFirestore.instance;
-  final _titleCtrl = TextEditingController();
-  final _contentCtrl = TextEditingController();
-
-  Future<void> _createNote() async {
-    final title = _titleCtrl.text.trim();
-    final content = _contentCtrl.text.trim();
-    if (title.isEmpty) return;
-
-    final now = Timestamp.now();
-    await _db.collection('notes').add({
-      'title': title,
-      'content': content,
-      'createdAt': now,
-      'updatedAt': now,
-    });
-
-    _titleCtrl.clear();
-    _contentCtrl.clear();
-    if (mounted) Navigator.pop(context);
+  late final Stream<List<Map<String, dynamic>>> _notesStream;
+  @override
+  void initState() {
+    super.initState();
+    final uid = widget.userId;
+    _notesStream = supabase
+        .from('notes')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', uid)                // фильтр по владельцу
+        .order('created_at', ascending: false);
   }
 
-  Future<void> _updateNote(DocumentReference ref, String title, String content) async {
-    await ref.update({
+  Future<void> _createNote(String title, String content) async {
+    final uid = supabase.auth.currentUser!.id;
+    await supabase.from('notes').insert({
+      'user_id': uid,
       'title': title,
       'content': content,
-      'updatedAt': Timestamp.now(),
+      'updated_at': DateTime.now().toIso8601String(),
     });
   }
 
-  Future<void> _deleteNote(DocumentReference ref) async {
-    await ref.delete();
+  Future<void> _updateNote(String id, String title, String content) async {
+    await supabase.from('notes').update({
+      'title': title,
+      'content': content,
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', id);
+  }
+
+  Future<void> _deleteNote(String id) async {
+    await supabase.from('notes').delete().eq('id', id);
   }
 
   void _openCreateDialog() {
+    final titleCtrl = TextEditingController();
+    final contentCtrl = TextEditingController();
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Новая заметка'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: _titleCtrl, decoration: const InputDecoration(labelText: 'Заголовок')),
-            TextField(controller: _contentCtrl, decoration: const InputDecoration(labelText: 'Текст')),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Отмена')),
-          FilledButton(onPressed: _createNote, child: const Text('Сохранить')),
-        ],
-      ),
-    );
-  }
-
-  void _openEditDialog(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>? ?? {};
-    final titleCtrl = TextEditingController(text: data['title'] ?? '');
-    final contentCtrl = TextEditingController(text: data['content'] ?? '');
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Редактировать'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -82,10 +63,10 @@ class _NotesPageState extends State<NotesPage> {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Отмена')),
           FilledButton(
             onPressed: () async {
-              await _updateNote(doc.reference, titleCtrl.text.trim(), contentCtrl.text.trim());
+              await _createNote(titleCtrl.text.trim(), contentCtrl.text.trim());
               if (mounted) Navigator.pop(context);
             },
-            child: const Text('Обновить'),
+            child: const Text('Сохранить'),
           ),
         ],
       ),
@@ -94,41 +75,71 @@ class _NotesPageState extends State<NotesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final notesStream = _db.collection('notes').orderBy('createdAt', descending: true).snapshots();
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Firebase Notes')),
+      appBar: AppBar(
+        title: const Text('Supabase Notes'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await supabase.auth.signOut();
+            },
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openCreateDialog,
         child: const Icon(Icons.add),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: notesStream,
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: _notesStream,
         builder: (context, snapshot) {
           if (snapshot.hasError) return const Center(child: Text('Ошибка загрузки'));
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-
-          final docs = snapshot.data!.docs;
-          if (docs.isEmpty) return const Center(child: Text('Пока нет заметок'));
-
+          final notes = snapshot.data!;
+          if (notes.isEmpty) return const Center(child: Text('Пока нет заметок'));
           return ListView.separated(
             padding: const EdgeInsets.all(12),
-            itemCount: docs.length,
+            itemCount: notes.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, i) {
-              final doc = docs[i];
-              final data = doc.data() as Map<String, dynamic>? ?? {};
-              final title = data['title'] ?? '(без названия)';
-              final content = data['content'] ?? '';
-
-              return Card(
-                child: ListTile(
-                  title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  subtitle: Text(content, maxLines: 2, overflow: TextOverflow.ellipsis),
-                  onTap: () => _openEditDialog(doc),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _deleteNote(doc.reference),
+              final n = notes[i];
+              return Dismissible(
+                key: ValueKey(n['id']),
+                background: Container(color: Colors.red.withOpacity(.1)),
+                onDismissed: (_) => _deleteNote(n['id']),
+                child: Card(
+                  child: ListTile(
+                    title: Text(n['title'] ?? '(без названия)', maxLines: 1, overflow: TextOverflow.ellipsis),
+                    subtitle: Text(n['content'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis),
+                    onTap: () {
+                      final tc = TextEditingController(text: n['title'] ?? '');
+                      final cc = TextEditingController(text: n['content'] ?? '');
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text('Редактировать'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(controller: tc, decoration: const InputDecoration(labelText: 'Заголовок')),
+                              TextField(controller: cc, decoration: const InputDecoration(labelText: 'Текст')),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Отмена')),
+                            FilledButton(
+                              onPressed: () async {
+                                await _updateNote(n['id'], tc.text.trim(), cc.text.trim());
+                                if (mounted) Navigator.pop(context);
+                              },
+                              child: const Text('Обновить'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    trailing: IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => _deleteNote(n['id'])),
                   ),
                 ),
               );

@@ -1,11 +1,6 @@
-# Практика #8 ЭФБО-09-23 Волков Роман
+# Практика #9 ЭФБО-09-23 Волков Роман
 
-Полностью рабочий Firebase
+Suparbase
 
-![alt text](image-5.png)
-
-![alt text](image-6.png)
-
-![alt text](image-7.png)
-
-![alt text](image-8.png)
+![alt text](image.png)
+![alt text](image-1.png)

@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'package:notes_list_example/notes_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:notes_list_example/auth_gate.dart';
 
-void main() async {
+const supabaseUrl = 'https://ihrmlsuobktlhhwtczvq.supabase.co';
+const supabaseAnonKey = '';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const NotesApp());
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+  runApp(NotesApp());
 }
+
 
 class NotesApp extends StatelessWidget {
   const NotesApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Firebase Notes',
+      title: 'Supabase Notes',
       theme: ThemeData(useMaterial3: true),
-      home: const NotesPage(),
+      home: const AuthGate(),
     );
   }
 }
+
