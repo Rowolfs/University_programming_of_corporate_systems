@@ -3,20 +3,20 @@ import 'package:tier_list_app/widgets/modal.dart';
 import 'package:tier_list_app/widgets/actionEditLine.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tier_list_app/widgets/heading.dart';
-class SignInPage extends StatelessWidget {
-  const SignInPage({super.key});
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
   
 
   @override
   Widget build(BuildContext context) {
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    return isLandscape ?  SignInPageVertical() : SignInPageVertical();
+    return isLandscape ?  RegisterPageVertical() : RegisterPageVertical();
   }
 }
 
 
-class SignInPageHorizontal extends StatelessWidget {
-  const SignInPageHorizontal({super.key});
+class RegisterPageHorizontal extends StatelessWidget {
+  const RegisterPageHorizontal({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +24,14 @@ class SignInPageHorizontal extends StatelessWidget {
   }
 }
 
-class SignInPageVertical extends StatelessWidget {
-  const SignInPageVertical({super.key});
+class RegisterPageVertical extends StatelessWidget {
+  const RegisterPageVertical({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
       Image.asset('assets/images/start_wallpaper.png', fit: BoxFit.cover,), 
-      Modal(label: "Войти", onPressed: VoidCallbackAction.new,  
+      Modal(label: "Зарегистрироваться", onPressed: VoidCallbackAction.new,  
       children: [
         SizedBox(height: 38.h),
         Heading(text: "Добро пожаловать"),
@@ -39,6 +39,8 @@ class SignInPageVertical extends StatelessWidget {
         ActionEditLine(label: "Логин",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
         SizedBox(height: 20.h),
         ActionEditLine(label: "Пароль",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
+        SizedBox(height: 20.h,),
+        ActionEditLine(label: "Повторный пароль",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
         SizedBox(height: 40.h,),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

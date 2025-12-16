@@ -18,12 +18,10 @@ class TierListPage extends StatelessWidget {
         end: Alignment.bottomCenter
         )
       ),
-        child: Stack(children: [
-          Image.asset('assets/images/start_wallpaper.png', fit: BoxFit.cover,),
-          GreetingsPage()
-        ],),
+        child: Stack(children: [Image.asset('assets/images/start_wallpaper.png', fit: BoxFit.cover,), 
+        GreetingsPage()])
     )
-   );
+  );
   }
 }
 

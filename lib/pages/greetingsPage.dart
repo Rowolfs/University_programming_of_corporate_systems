@@ -3,7 +3,7 @@ import 'package:tier_list_app/pages/signInPage.dart';
 import "package:tier_list_app/widgets/actionButton.dart";
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tier_list_app/pages/signInPage.dart';
+import 'package:tier_list_app/pages/RegisterPage.dart';
 
 
 class GreetingsPage extends StatelessWidget {
@@ -32,7 +32,7 @@ class GreetingsPageVertical extends StatelessWidget {
               SizedBox(height: 149.h),
               ActionButton(label: "Войти", onPressed:() => Navigator.push(context, MaterialPageRoute(builder: (context) => SignInPage())) ),
               SizedBox(height: 30.h),
-              ActionButton(label: "Регистрация", onPressed: VoidCallbackAction.new,),
+              ActionButton(label: "Регистрация", onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => RegisterPage())),),
             ],
         ),)
 

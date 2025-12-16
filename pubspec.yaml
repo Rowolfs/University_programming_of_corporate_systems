@@ -33,6 +33,7 @@ dependencies:
   flutter_screenutil: ^5.9.0
   google_fonts: ^6.3.0
   flutter_svg: ^2.2.0
+  smooth_corner: ^1.1.1
   
 
   # The following adds the Cupertino Icons font to your application.
@@ -71,6 +72,9 @@ flutter:
   assets:
   - assets/images/start_wallpaper.png
   - assets/vectors/Tierly.svg
+  - assets/icons/google.png
+  - assets/icons/yandex.png
+  - assets/icons/vk.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

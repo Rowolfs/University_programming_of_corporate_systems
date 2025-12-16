@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:smooth_corner/smooth_corner.dart';
 
 
 class ActionButton extends StatelessWidget {
@@ -16,9 +16,7 @@ class ActionButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         fixedSize: Size(306.w, 55.h),
         backgroundColor: Color(0xFFFF7B64),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.circular(10.r)
-        ),
+        shape: SmoothRectangleBorder(borderRadius: BorderRadiusGeometry.circular(10.r),smoothness: 1),
         elevation: 4,
 
       ),
