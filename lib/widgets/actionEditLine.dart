@@ -5,17 +5,29 @@ import 'package:smooth_corner/smooth_corner.dart';
 
 
 class ActionEditLine extends StatefulWidget {
-  const ActionEditLine({super.key, required this.onChanged, required this.onSubmitted, required this.label});
+  const ActionEditLine({super.key,
+  this.onChanged = VoidCallbackAction.new,
+  this.onSubmitted = VoidCallbackAction.new,
+  required this.label, 
+  this.keyboardType = TextInputType.text,
+  this.obscureText = false,
+  this.suffixIcon,
+  this.prefixIcon
+  
+  });
   final VoidCallback onChanged;
   final VoidCallback onSubmitted;
   final String label;
+  final TextInputType keyboardType;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
 
   @override
   State<ActionEditLine> createState() => _ActionEditLineState();
 }
 
 class _ActionEditLineState extends State<ActionEditLine> {
-  late VoidCallback onChanged;
   @override
   Widget build(BuildContext context) {
     return SmoothContainer(
@@ -24,6 +36,8 @@ class _ActionEditLineState extends State<ActionEditLine> {
       smoothness: 1,
       borderRadius: BorderRadiusGeometry.circular(8.r),
       child: TextField(
+        obscureText: widget.obscureText,
+        keyboardType: widget.keyboardType,
         style: GoogleFonts.unbounded(  // цвет плейсхолдера
             fontSize: 13.sp,
             color: Colors.white,
@@ -42,6 +56,10 @@ class _ActionEditLineState extends State<ActionEditLine> {
             borderRadius: BorderRadius.circular(8.r),
             borderSide: BorderSide.none,
           ),
+          suffixIcon: widget.suffixIcon,
+          prefixIcon: widget.prefixIcon,
+  
+
         ),
         onChanged: (value) => widget.onChanged(),
         onSubmitted: (value) => widget.onSubmitted,

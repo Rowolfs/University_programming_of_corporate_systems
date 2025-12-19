@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tier_list_app/pages/homePage.dart';
 import 'package:tier_list_app/widgets/modal.dart';
 import 'package:tier_list_app/widgets/actionEditLine.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,23 +25,43 @@ class RegisterPageHorizontal extends StatelessWidget {
   }
 }
 
-class RegisterPageVertical extends StatelessWidget {
+class RegisterPageVertical extends StatefulWidget {
   const RegisterPageVertical({super.key});
 
   @override
+  State<RegisterPageVertical> createState() => _RegisterPageVerticalState();
+}
+
+class _RegisterPageVerticalState extends State<RegisterPageVertical> {
+  @override
+  bool _obscureText1 = true;
+  bool _obscureText2 = true;
+
   Widget build(BuildContext context) {
     return Stack(children: [
       Image.asset('assets/images/start_wallpaper.png', fit: BoxFit.cover,), 
-      Modal(label: "Зарегистрироваться", onPressed: VoidCallbackAction.new,  
+      Modal(label: "Зарегистрироваться", onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage())),  
       children: [
         SizedBox(height: 38.h),
         Heading(text: "Добро пожаловать"),
         SizedBox(height: 45.h),
         ActionEditLine(label: "Логин",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
         SizedBox(height: 20.h),
-        ActionEditLine(label: "Пароль",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
+        ActionEditLine(label: "Пароль", obscureText: _obscureText1,
+          suffixIcon: IconButton(onPressed: (){
+            setState(() {
+              _obscureText1 = !_obscureText1; 
+            });
+          }, icon: _obscureText1 ? Icon(Icons.visibility_off) : Icon(Icons.visibility) ),
+        ),
         SizedBox(height: 20.h,),
-        ActionEditLine(label: "Повторный пароль",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
+        ActionEditLine(label: "Пароль", obscureText: _obscureText2,
+          suffixIcon: IconButton(onPressed: (){
+            setState(() {
+              _obscureText2 = !_obscureText2; 
+            });
+          }, icon: _obscureText2 ? Icon(Icons.visibility_off) : Icon(Icons.visibility) ),
+        ),
         SizedBox(height: 40.h,),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -56,5 +77,7 @@ class RegisterPageVertical extends StatelessWidget {
       ])
     ]);
   }
+}
 
-  }
+
+

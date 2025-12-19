@@ -5,13 +5,14 @@ import 'package:google_fonts/google_fonts.dart';
 class Heading extends StatelessWidget {
   final String text;
   final Color color;
-  const Heading({super.key, required this.text, this.color = Colors.white});
+  final double fontSize;
+  const Heading({super.key, required this.text, this.color = Colors.white, this.fontSize = 24});
 
   
   @override
   Widget build(context) {
     return Text(text, style: GoogleFonts.unbounded(
-          fontSize: 24.sp,
+          fontSize: fontSize,
           color: color,
           fontWeight: FontWeight.w600,
         ),);

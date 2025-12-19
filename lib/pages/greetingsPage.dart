@@ -25,21 +25,51 @@ class GreetingsPageVertical extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Center(child: Column(
-          children: [
-              SizedBox(height: 138.h),
-              SvgPicture.asset("assets/vectors/Tierly.svg",width: 266.w, height: 94.h,),
-              SizedBox(height: 149.h),
-              ActionButton(label: "Войти", onPressed:() => Navigator.push(context, MaterialPageRoute(builder: (context) => SignInPage())) ),
-              SizedBox(height: 30.h),
-              ActionButton(label: "Регистрация", onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => RegisterPage())),),
-            ],
-        ),)
+        // фон
+        Positioned.fill(
+          child: Opacity(
+            opacity: 1,
+            child: Image.asset(
+              'assets/images/start_wallpaper.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
 
+        // контент
+        Center(
+          child: Column(
+            children: [
+              SizedBox(height: 138),
+              SvgPicture.asset(
+                "assets/vectors/Tierly.svg",
+                width: 266,
+                height: 94,
+              ),
+              SizedBox(height: 149),
+              ActionButton(
+                label: "Войти",
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignInPage()),
+                ),
+              ),
+              SizedBox(height: 30),
+              ActionButton(
+                label: "Регистрация",
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterPage()),
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 }
+
 
 class GreetingsPageHorizontal extends StatelessWidget {
   const GreetingsPageHorizontal({super.key});

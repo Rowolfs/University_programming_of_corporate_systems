@@ -75,6 +75,12 @@ flutter:
   - assets/icons/google.png
   - assets/icons/yandex.png
   - assets/icons/vk.png
+  - assets/icons/home.svg
+  - assets/icons/search.svg
+  - assets/icons/plus.svg
+  - assets/icons/user.svg
+  - assets/images/tierlist.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

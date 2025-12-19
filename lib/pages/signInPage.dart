@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tier_list_app/pages/homePage.dart';
 import 'package:tier_list_app/widgets/modal.dart';
 import 'package:tier_list_app/widgets/actionEditLine.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,22 +25,38 @@ class SignInPageHorizontal extends StatelessWidget {
   }
 }
 
-class SignInPageVertical extends StatelessWidget {
+class SignInPageVertical extends StatefulWidget {
   const SignInPageVertical({super.key});
+
+  @override
+  State<SignInPageVertical> createState() => _SignInPageVerticalState();
+}
+
+class _SignInPageVerticalState extends State<SignInPageVertical> {
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
       Image.asset('assets/images/start_wallpaper.png', fit: BoxFit.cover,), 
-      Modal(label: "Войти", onPressed: VoidCallbackAction.new,  
+      Modal(label: "Войти", onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage())),  
       children: [
         SizedBox(height: 38.h),
         Heading(text: "Добро пожаловать"),
         SizedBox(height: 45.h),
-        ActionEditLine(label: "Логин",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
+        ActionEditLine(label: "Логин"),
         SizedBox(height: 20.h),
-        ActionEditLine(label: "Пароль",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
-        SizedBox(height: 40.h,),
+        ActionEditLine(label: "Пароль",keyboardType: TextInputType.visiblePassword, obscureText: _obscureText,
+        suffixIcon: IconButton(
+          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+        ),
+        ),
+        SizedBox(height: 40.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
