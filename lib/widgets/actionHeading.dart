@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Heading extends StatelessWidget {
+class ActionHeading extends StatelessWidget {
   final String text;
   final Color color;
   final double fontSize;
-  const Heading({super.key, required this.text, this.color = Colors.white, this.fontSize = 24});
+  const ActionHeading({super.key, required this.text, this.color = Colors.white, this.fontSize = 24});
 
   
   @override

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tier_list_app/pages/homePage.dart';
-import 'package:tier_list_app/widgets/modal.dart';
+import 'package:tier_list_app/widgets/actionModal.dart';
 import 'package:tier_list_app/widgets/actionEditLine.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tier_list_app/widgets/heading.dart';
+import 'package:tier_list_app/widgets/actionHeading.dart';
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
   
@@ -40,10 +40,10 @@ class _RegisterPageVerticalState extends State<RegisterPageVertical> {
   Widget build(BuildContext context) {
     return Stack(children: [
       Image.asset('assets/images/start_wallpaper.png', fit: BoxFit.cover,), 
-      Modal(label: "Зарегистрироваться", onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage())),  
+      ActionModal(label: "Зарегистрироваться", onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage())),  
       children: [
         SizedBox(height: 38.h),
-        Heading(text: "Добро пожаловать"),
+        ActionHeading(text: "Добро пожаловать"),
         SizedBox(height: 45.h),
         ActionEditLine(label: "Логин",onChanged: VoidCallbackAction.new, onSubmitted: VoidCallbackAction.new),
         SizedBox(height: 20.h),

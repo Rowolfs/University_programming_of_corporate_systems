@@ -1,31 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:tier_list_app/pages/greetingsPage.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tier_list_app/widgets/actionAppBar.dart';
+import 'package:tier_list_app/widgets/actionNavigationBar.dart';
+import 'package:tier_list_app/widgets/tierList.dart';
 
 class TierListPage extends StatelessWidget {
   const TierListPage({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [
-          Color(0xFF8D8D8D),
-          Color(0xFF272727)
-        ],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter
-        )
-      ),
-        child: Stack(children: [Image.asset('assets/images/start_wallpaper.png', fit: BoxFit.cover,), 
-        GreetingsPage()])
-    )
-  );
+    return Stack(
+      children: [
+        /// ФОН — картинка
+        const Image(
+          image: AssetImage('assets/images/start_wallpaper.png'),
+          fit: BoxFit.cover,
+        ),
+
+        /// ФОН — градиент
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF141E30),
+                Colors.transparent,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+
+        /// ОСНОВНОЙ Scaffold (как в HomePage)
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: const ActionAppBar(),
+          bottomNavigationBar: const ActionNavigationBar(),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                vertical: 12.h,
+              ),
+              child: TierList(),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
-
-
-
-
-

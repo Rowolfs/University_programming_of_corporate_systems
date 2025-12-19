@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tier_list_app/pages/homePage.dart';
-import 'package:tier_list_app/widgets/modal.dart';
+import 'package:tier_list_app/widgets/actionModal.dart';
 import 'package:tier_list_app/widgets/actionEditLine.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tier_list_app/widgets/heading.dart';
+import 'package:tier_list_app/widgets/actionHeading.dart';
+
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
   
@@ -39,10 +40,10 @@ class _SignInPageVerticalState extends State<SignInPageVertical> {
   Widget build(BuildContext context) {
     return Stack(children: [
       Image.asset('assets/images/start_wallpaper.png', fit: BoxFit.cover,), 
-      Modal(label: "Войти", onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage())),  
+      ActionModal(label: "Войти", onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage())),  
       children: [
         SizedBox(height: 38.h),
-        Heading(text: "Добро пожаловать"),
+        ActionHeading(text: "Добро пожаловать"),
         SizedBox(height: 45.h),
         ActionEditLine(label: "Логин"),
         SizedBox(height: 20.h),
