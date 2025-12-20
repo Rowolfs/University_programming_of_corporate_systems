@@ -33,7 +33,7 @@ class TierListRow extends StatelessWidget {
             children: [
               _buildTierLabel(),
               Expanded(child: _buildItemsArea()),
-              _buildActions(),
+              
             ],
           ),
         );
@@ -102,7 +102,7 @@ class TierListRow extends StatelessWidget {
       child: image,
     );
   }
-
+/*
   Widget _buildActions() {
     return Container(
       width: 40.w,
@@ -116,7 +116,7 @@ class TierListRow extends StatelessWidget {
       ),
     );
   }
-
+*/
   Widget _buildIcon(IconData icon) {
     return Icon(icon, color: Colors.white54, size: 20.sp);
   }

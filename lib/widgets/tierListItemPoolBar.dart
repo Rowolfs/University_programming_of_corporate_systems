@@ -118,12 +118,22 @@ class _PoolItem extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    final path = 'assets/images/tierlist.png'; // <-- если у тебя поле иначе — поменяй тут
+  switch (item.imageType) {
+    case TierItemImageType.asset:
+      return Image.asset(item.imageRef, fit: BoxFit.cover);
 
-    if (path.startsWith('assets/')) {
-      return Image.asset(path, fit: BoxFit.cover);
-    }
+    case TierItemImageType.file:
+      return Image.file(File(item.imageRef), fit: BoxFit.cover);
 
-    return Image.file(File(path), fit: BoxFit.cover);
+    case TierItemImageType.network:
+      return Image.network(
+        item.imageRef,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          debugPrint('Pool image load failed: $error');
+          return Image.asset('assets/images/tierlist.png', fit: BoxFit.cover);
+        },
+      );
   }
+}
 }

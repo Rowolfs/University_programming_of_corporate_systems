@@ -5,16 +5,23 @@ import 'package:tier_list_app/widgets/actionNavigationBar.dart';
 import 'package:tier_list_app/widgets/tierList.dart';
 
 class TierListPage extends StatelessWidget {
-  const TierListPage({super.key});
+  final String tierlistId;
+
+  const TierListPage({
+    super.key,
+    required this.tierlistId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         /// ФОН — картинка
-        const Image(
-          image: AssetImage('assets/images/start_wallpaper.png'),
-          fit: BoxFit.cover,
+        const Positioned.fill(
+          child: Image(
+            image: AssetImage('assets/images/start_wallpaper.png'),
+            fit: BoxFit.cover,
+          ),
         ),
 
         /// ФОН — градиент
@@ -38,10 +45,10 @@ class TierListPage extends StatelessWidget {
           bottomNavigationBar: const ActionNavigationBar(),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                vertical: 12.h,
+              padding: EdgeInsets.symmetric(vertical: 12.h),
+              child: TierList(
+                tierlistId: tierlistId,
               ),
-              child: TierList(),
             ),
           ),
         ),

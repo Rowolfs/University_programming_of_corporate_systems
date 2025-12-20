@@ -3,31 +3,30 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 
-
-class ActionEditLine extends StatefulWidget {
-  const ActionEditLine({super.key,
-  this.onChanged = VoidCallbackAction.new,
-  this.onSubmitted = VoidCallbackAction.new,
-  required this.label, 
-  this.keyboardType = TextInputType.text,
-  this.obscureText = false,
-  this.suffixIcon,
-  this.prefixIcon
-  
+class ActionEditLine extends StatelessWidget {
+  const ActionEditLine({
+    super.key,
+    required this.label,
+    this.controller,
+    this.onChanged,
+    this.onSubmitted,
+    this.keyboardType = TextInputType.text,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.prefixIcon,
   });
-  final VoidCallback onChanged;
-  final VoidCallback onSubmitted;
+
   final String label;
+  final TextEditingController? controller;
+
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+
   final TextInputType keyboardType;
   final bool obscureText;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
 
-  @override
-  State<ActionEditLine> createState() => _ActionEditLineState();
-}
-
-class _ActionEditLineState extends State<ActionEditLine> {
   @override
   Widget build(BuildContext context) {
     return SmoothContainer(
@@ -36,16 +35,17 @@ class _ActionEditLineState extends State<ActionEditLine> {
       smoothness: 1,
       borderRadius: BorderRadiusGeometry.circular(8.r),
       child: TextField(
-        obscureText: widget.obscureText,
-        keyboardType: widget.keyboardType,
-        style: GoogleFonts.unbounded(  // цвет плейсхолдера
-            fontSize: 13.sp,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+        controller: controller,
+        obscureText: obscureText,
+        keyboardType: keyboardType,
+        style: GoogleFonts.unbounded(
+          fontSize: 13.sp,
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
         decoration: InputDecoration(
-          hintText: widget.label,
-          hintStyle: GoogleFonts.unbounded(  // цвет плейсхолдера
+          hintText: label,
+          hintStyle: GoogleFonts.unbounded(
             fontSize: 13.sp,
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -56,13 +56,11 @@ class _ActionEditLineState extends State<ActionEditLine> {
             borderRadius: BorderRadius.circular(8.r),
             borderSide: BorderSide.none,
           ),
-          suffixIcon: widget.suffixIcon,
-          prefixIcon: widget.prefixIcon,
-  
-
+          suffixIcon: suffixIcon,
+          prefixIcon: prefixIcon,
         ),
-        onChanged: (value) => widget.onChanged(),
-        onSubmitted: (value) => widget.onSubmitted,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
       ),
     );
   }
