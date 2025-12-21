@@ -4,11 +4,11 @@ App to create and share tierlists
 
 ## Frontend 
 
-[![Watch the video]](https://github.com/Rowolfs/University_programming_of_corporate_systems/raw/refs/heads/project/preview.mp4)
+[Видео с работой приложения](https://github.com/Rowolfs/University_programming_of_corporate_systems/raw/refs/heads/project/preview.mp4)
 
 
 
-## Disain
+## Design
 
 ![alt text](image.png)
 
