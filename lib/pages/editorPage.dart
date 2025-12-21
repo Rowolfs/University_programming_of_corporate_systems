@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tier_list_app/widgets/actionNavigationBar.dart';
 import 'package:tier_list_app/widgets/actionAppBar.dart';
-import 'package:tier_list_app/widgets/tierListCard.dart';
+
 
 class EditorPage extends StatelessWidget {
   const EditorPage({super.key});

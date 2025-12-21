@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tier_list_app/pages/greetingsPage.dart';
-import 'package:tier_list_app/pages/tierListPage.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

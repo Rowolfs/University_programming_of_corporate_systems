@@ -1,4 +1,3 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_client.dart';
 
 class TierlistsService {
@@ -29,6 +28,11 @@ class TierlistsService {
     required int page,
     int pageSize = 20,
   }) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Not authorized');
+    }
+
     final from = page * pageSize;
     final to = from + pageSize - 1;
 
@@ -46,6 +50,7 @@ class TierlistsService {
             full_name
           )
         ''')
+        .eq('owner_id', user.id) // только мои [web:170]
         .order('created_at', ascending: false)
         .range(from, to);
 
@@ -58,6 +63,11 @@ class TierlistsService {
     required String query,
     int limit = 50,
   }) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Not authorized');
+    }
+
     final q = query.trim();
     if (q.isEmpty) return [];
 
@@ -75,6 +85,7 @@ class TierlistsService {
             full_name
           )
         ''')
+        .eq('owner_id', user.id) // только мои [web:170]
         .ilike('title', '%$q%')
         .order('created_at', ascending: false)
         .limit(limit);

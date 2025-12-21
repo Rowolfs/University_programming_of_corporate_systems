@@ -3,7 +3,7 @@ import 'package:smooth_corner/smooth_corner.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:tier_list_app/pages/greetingsPage.dart';
+
 import 'package:tier_list_app/pages/homePage.dart';
 import 'package:tier_list_app/pages/searchPage.dart';
 import 'package:tier_list_app/pages/tierListPage.dart';

@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:storage_client/storage_client.dart';
 
 import 'package:tier_list_app/services/supabase_client.dart';
+import 'package:tier_list_app/pages/greetingsPage.dart';
 
 class ActionAppBar extends StatefulWidget implements PreferredSizeWidget {
   const ActionAppBar({super.key});
@@ -52,6 +53,33 @@ class _ActionAppBarState extends State<ActionAppBar> {
     }
   }
 
+  Future<void> _signOutAndGoToGreetings() async {
+    if (_loading) return;
+
+    setState(() => _loading = true);
+    try {
+      await supabase.auth.signOut(); // [web:256]
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const GreetingsPage()),
+        (route) => false,
+      ); // [web:267]
+    } catch (e) {
+      debugPrint('Sign out error: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось выйти из аккаунта'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   Future<void> _pickAndUploadAvatar() async {
     if (_loading) return;
 
@@ -70,9 +98,12 @@ class _ActionAppBarState extends State<ActionAppBar> {
     try {
       final Uint8List bytes = await picked.readAsBytes();
 
-      final extRaw =
-          picked.name.contains('.') ? picked.name.split('.').last.toLowerCase() : 'jpg';
-      final ext = (extRaw == 'png' || extRaw == 'jpg' || extRaw == 'jpeg') ? extRaw : 'jpg';
+      final extRaw = picked.name.contains('.')
+          ? picked.name.split('.').last.toLowerCase()
+          : 'jpg';
+      final ext = (extRaw == 'png' || extRaw == 'jpg' || extRaw == 'jpeg')
+          ? extRaw
+          : 'jpg';
 
       final path = '${user.id}/avatar.$ext';
 
@@ -131,6 +162,7 @@ class _ActionAppBarState extends State<ActionAppBar> {
             color: Colors.transparent,
             child: InkWell(
               onTap: _pickAndUploadAvatar,
+              onLongPress: _signOutAndGoToGreetings, // <-- ВЫХОД [web:267]
               borderRadius: BorderRadius.circular(999),
               child: SizedBox(
                 width: 38.w,
