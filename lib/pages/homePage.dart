@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     setState(() => _loading = true);
 
     try {
-      final data = await _service.fetchPage(page: _page, pageSize: _pageSize); // range() pagination [web:86]
+      final data = await _service.fetchPage(page: _page, pageSize: _pageSize);
 
       if (!mounted) return;
       setState(() {
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final crossAxisCount = width >= 700 ? 3 : 2; // чуть адаптивнее под планшеты/landscape
+    final crossAxisCount = width >= 700 ? 3 : 2;
 
     return Stack(
       children: [
@@ -136,16 +136,17 @@ class _HomePageState extends State<HomePage> {
                     itemCount: _items.length + (_loading ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index >= _items.length) {
-                        // Лоадер в конце списка при догрузке [web:118]
                         return const Center(child: CircularProgressIndicator());
                       }
 
                       final item = _items[index];
+
                       return TierListCard(
                         id: item['id'].toString(),
                         title: (item['title'] ?? 'Без названия').toString(),
                         previewUrl: item['preview_url']?.toString(),
                         ownerId: item['owner_id']?.toString(),
+                        ownerAvatarUrl: item['owner']?['avatar_url']?.toString(),
                       );
                     },
                   ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tier_list_app/pages/tierListPage.dart';
 import 'package:tier_list_app/widgets/actionHeading.dart';
 
@@ -11,12 +10,16 @@ class TierListCard extends StatelessWidget {
   final String? previewUrl;
   final String? ownerId;
 
+  // NEW: URL аватарки владельца
+  final String? ownerAvatarUrl;
+
   const TierListCard({
     super.key,
     required this.id,
     required this.title,
     this.previewUrl,
     this.ownerId,
+    this.ownerAvatarUrl,
   });
 
   @override
@@ -57,10 +60,15 @@ class TierListCard extends StatelessWidget {
               padding: EdgeInsets.only(left: 8.w, right: 10.w, bottom: 10.h),
               child: Row(
                 children: [
-                  SvgPicture.asset(
-                    "assets/icons/user.svg",
-                    width: 25.w,
-                    height: 25.h,
+                  CircleAvatar(
+                    radius: 12.5.r,
+                    backgroundColor: const Color(0xFF1A1A1A),
+                    backgroundImage:
+                        const AssetImage("assets/images/avatar_placeholder.png"),
+                    foregroundImage:
+                        (ownerAvatarUrl != null && ownerAvatarUrl!.trim().isNotEmpty)
+                            ? NetworkImage(ownerAvatarUrl!.trim())
+                            : null,
                   ),
                   SizedBox(width: 6.w),
                   Expanded(

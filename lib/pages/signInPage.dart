@@ -181,7 +181,7 @@ class _SignInBodyState extends State<_SignInBody> {
         ],
 
         SizedBox(height: 40.h),
-
+        /*
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -211,8 +211,10 @@ class _SignInBodyState extends State<_SignInBody> {
                 height: 40.h,
               ),
             ),
+            
           ],
-        ),
+          
+        ),*/
       ],
     );
   }

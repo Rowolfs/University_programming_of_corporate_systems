@@ -1,8 +1,13 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:storage_client/storage_client.dart';
+
 import 'package:tier_list_app/models/tierItem.dart';
+import 'package:tier_list_app/pages/homePage.dart';
 import 'package:tier_list_app/widgets/actionButton.dart';
 import 'package:tier_list_app/widgets/tierListRow.dart';
 import 'package:tier_list_app/widgets/tierListItemPoolBar.dart';
@@ -46,12 +51,19 @@ class _TierListState extends State<TierList> {
   bool _loading = false;
   String? _error;
 
-  // ---- title ----
+  // ---- tables ----
   static const _tierlistsTable = 'tierlists';
   static const _itemsTable = 'tierlist_items';
 
+  // ---- title ----
   final _titleCtrl = TextEditingController();
   bool _titleLoading = false;
+
+  // ---- preview ----
+  final _picker = ImagePicker();
+  bool _previewUploading = false;
+  String? _previewUrl;
+  String? _previewPath;
 
   // ---- save ----
   bool _dirty = false;
@@ -118,12 +130,19 @@ class _TierListState extends State<TierList> {
     try {
       final row = await supabase
           .from(_tierlistsTable)
-          .select('title')
+          .select('title, preview_url, preview_path')
           .eq('id', widget.tierlistId)
           .maybeSingle();
 
       if (!mounted) return;
+
       _titleCtrl.text = (row?['title'] ?? 'Новый тирлист').toString();
+
+      final pUrl = (row?['preview_url'] ?? '').toString().trim();
+      _previewUrl = pUrl.isEmpty ? null : pUrl;
+
+      final pPath = (row?['preview_path'] ?? '').toString().trim();
+      _previewPath = pPath.isEmpty ? null : pPath;
     } catch (e) {
       debugPrint('TierList title load error: $e');
     } finally {
@@ -133,6 +152,79 @@ class _TierListState extends State<TierList> {
 
   void _onTitleChanged(String value) {
     _markDirty();
+  }
+
+  Future<void> _pickAndUploadPreview() async {
+    if (_previewUploading || _saving || _deleting) return;
+
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Нужно войти в аккаунт'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+      maxWidth: 1200,
+    );
+    if (picked == null) return;
+
+    setState(() => _previewUploading = true);
+
+    try {
+      final Uint8List bytes = await picked.readAsBytes();
+
+      final extRaw = picked.name.contains('.')
+          ? picked.name.split('.').last.toLowerCase()
+          : 'jpg';
+      final ext = (extRaw == 'png' || extRaw == 'jpg' || extRaw == 'jpeg' || extRaw == 'webp')
+          ? extRaw
+          : 'jpg';
+
+      final bucket = supabase.storage.from('tierlist_previews');
+      final path = '${user.id}/${widget.tierlistId}/preview.$ext';
+
+      await bucket.uploadBinary(
+        path,
+        bytes,
+        fileOptions: FileOptions(
+          upsert: true,
+          cacheControl: '3600',
+          contentType: ext == 'png' ? 'image/png' : 'image/jpeg',
+        ),
+      );
+
+      final url = bucket.getPublicUrl(path);
+
+      await supabase.from(_tierlistsTable).update({
+        'preview_url': url,
+        'preview_path': path,
+      }).eq('id', widget.tierlistId);
+
+      if (!mounted) return;
+      setState(() {
+        _previewUrl = url;
+        _previewPath = path;
+        _dirty = true;
+      });
+    } catch (e) {
+      debugPrint('TierList preview upload error: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось загрузить превью'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _previewUploading = false);
+    }
   }
 
   Future<void> _loadTierlistItems() async {
@@ -192,7 +284,6 @@ class _TierListState extends State<TierList> {
         }
       }
 
-      // применяем + дедуп
       tierItems = nextTierItems;
       poolItems = nextPool;
       _dedupeState();
@@ -238,10 +329,8 @@ class _TierListState extends State<TierList> {
     setState(() => _saving = true);
 
     try {
-      // Перед сохранением ещё раз нормализуем, чтобы не отправить дубли на сервер
       _dedupeState();
 
-      // 1) title
       if (title.isNotEmpty) {
         await supabase
             .from(_tierlistsTable)
@@ -249,7 +338,6 @@ class _TierListState extends State<TierList> {
             .eq('id', widget.tierlistId);
       }
 
-      // 2) tierlist_items: tier + position
       final updates = <Map<String, dynamic>>[];
 
       void addList(List<TierItem> list, String? tierKeyOrNull) {
@@ -273,16 +361,12 @@ class _TierListState extends State<TierList> {
         }
       }
 
-      // pool => tier = null
       addList(poolItems, null);
-
-      // tiers
       for (final entry in tierItems.entries) {
         addList(entry.value, entry.key);
       }
 
       if (updates.isNotEmpty) {
-        // Важно: upsert должен конфликтовать по id
         await supabase.from(_itemsTable).upsert(
               updates,
               onConflict: 'id',
@@ -315,39 +399,12 @@ class _TierListState extends State<TierList> {
   Future<void> _deleteTierlist() async {
     if (_saving || _deleting) return;
 
-    final ok = await showDialog<bool>(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => AlertDialog(
-        title: const Text('Удалить тирлист?'),
-        content: const Text('Удалятся все карточки внутри. Это действие нельзя отменить.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Отмена'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Удалить'),
-          ),
-        ],
-      ),
-    );
-
-    if (ok != true) return;
 
     setState(() => _deleting = true);
 
     try {
-      await supabase
-          .from(_itemsTable)
-          .delete()
-          .eq('tierlist_id', widget.tierlistId);
-
-      await supabase
-          .from(_tierlistsTable)
-          .delete()
-          .eq('id', widget.tierlistId);
+      await supabase.from(_itemsTable).delete().eq('tierlist_id', widget.tierlistId);
+      await supabase.from(_tierlistsTable).delete().eq('id', widget.tierlistId);
 
       if (!mounted) return;
 
@@ -358,7 +415,10 @@ class _TierListState extends State<TierList> {
         ),
       );
 
-      Navigator.of(context).pop();
+      Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const HomePage()),
+      (Route<dynamic> route) => false,
+    );
     } catch (e) {
       debugPrint('TierList delete error: $e');
       if (!mounted) return;
@@ -453,7 +513,6 @@ class _TierListState extends State<TierList> {
 
             if (!mounted) return;
             setState(() {
-              // на всякий: если вдруг такой id уже есть (повторный insert/повторное событие UI)
               poolItems.removeWhere((e) => e.id == created.id);
               for (final key in tierItems.keys) {
                 tierItems[key]!.removeWhere((e) => e.id == created.id);
@@ -481,28 +540,69 @@ class _TierListState extends State<TierList> {
   void onAddNew() => openCreateCardDialog();
 
   Widget _titleHeader() {
+    final disabled =
+        _titleLoading || _saving || _deleting || _previewUploading;
+
     return Padding(
       padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 8.h),
-      child: TextField(
-        controller: _titleCtrl,
-        enabled: !_titleLoading && !_saving && !_deleting,
-        onChanged: _onTitleChanged,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18.sp,
-          fontWeight: FontWeight.w700,
-        ),
-        decoration: InputDecoration(
-          hintText: 'Название тирлиста',
-          hintStyle: const TextStyle(color: Colors.white54),
-          filled: true,
-          fillColor: const Color(0xFF1A1A1A),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide.none,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _titleCtrl,
+              enabled: !disabled,
+              onChanged: _onTitleChanged,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w700,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Название тирлиста',
+                hintStyle: const TextStyle(color: Colors.white54),
+                filled: true,
+                fillColor: const Color(0xFF1A1A1A),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+              ),
+            ),
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-        ),
+          SizedBox(width: 10.w),
+          InkWell(
+            onTap: disabled ? null : _pickAndUploadPreview,
+            borderRadius: BorderRadius.circular(12.r),
+            child: Container(
+              width: 48.w,
+              height: 48.w,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1A1A1A),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: Colors.white.withAlpha(35)),
+                image: _previewUrl == null
+                    ? null
+                    : DecorationImage(
+                        image: NetworkImage(_previewUrl!),
+                        fit: BoxFit.cover,
+                      ),
+              ),
+              child: _previewUploading
+                  ? const Center(
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  : (_previewUrl == null
+                      ? const Icon(Icons.image, color: Colors.white70)
+                      : null),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -517,9 +617,7 @@ class _TierListState extends State<TierList> {
           Expanded(
             child: ActionButton(
               onPressed: disabled ? null : _saveAll,
-              label: _saving
-                  ? 'Сохранение…'
-                  : (_dirty ? 'Сохранить' : 'Сохранено'),
+              label: _saving ? 'Сохранение…' : (_dirty ? 'Сохранить' : 'Сохранено'),
             ),
           ),
           SizedBox(width: 10.w),
@@ -616,7 +714,7 @@ class _TierListState extends State<TierList> {
       ),
       child: Column(
         children: [
-          _titleHeader(),
+          _titleHeader(), // <-- название + превью в одной строке
           _content(context),
           _saveBar(),
         ],

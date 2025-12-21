@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:tier_list_app/pages/greetingsPage.dart';
 import 'package:tier_list_app/pages/homePage.dart';
+import 'package:tier_list_app/pages/searchPage.dart';
 import 'package:tier_list_app/pages/tierListPage.dart';
 import 'package:tier_list_app/services/tierlists_service.dart';
 
@@ -85,7 +86,7 @@ class ActionNavigationBar extends StatelessWidget {
             case 2:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const GreetingsPage()),
+                MaterialPageRoute(builder: (_) => const SearchPage()),
               ); // replace чтобы не копить страницы [web:261]
               break;
           }

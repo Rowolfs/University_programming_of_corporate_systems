@@ -213,7 +213,7 @@ class _RegisterBodyState extends State<_RegisterBody> {
         ],
 
         SizedBox(height: 40.h),
-
+        /*
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -244,7 +244,7 @@ class _RegisterBodyState extends State<_RegisterBody> {
               ),
             ),
           ],
-        ),
+        ),*/
       ],
     );
   }

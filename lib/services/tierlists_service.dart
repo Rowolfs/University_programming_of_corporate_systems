@@ -4,12 +4,11 @@ import 'supabase_client.dart';
 class TierlistsService {
   static const _table = 'tierlists';
 
-
   Future<Map<String, dynamic>> createTierlist({
     required String title,
     String? previewUrl,
   }) async {
-    final user = supabase.auth.currentUser; // текущий пользователь [web:246]
+    final user = supabase.auth.currentUser;
     if (user == null) {
       throw Exception('Not authorized');
     }
@@ -21,9 +20,9 @@ class TierlistsService {
           'owner_id': user.id,
           'preview_url': previewUrl,
         })
-        .select(); // вернуть вставленную строку [web:241]
+        .select();
 
-    return (data as List).first as Map<String, dynamic>;
+    return Map<String, dynamic>.from((data as List).first as Map);
   }
 
   Future<List<Map<String, dynamic>>> fetchPage({
@@ -31,12 +30,57 @@ class TierlistsService {
     int pageSize = 20,
   }) async {
     final from = page * pageSize;
-    final to = from + pageSize - 1; // range() inclusive [web:86]
+    final to = from + pageSize - 1;
 
-    return await supabase
+    final data = await supabase
         .from(_table)
-        .select('id, title, owner_id, preview_url, created_at')
+        .select('''
+          id,
+          title,
+          owner_id,
+          preview_url,
+          created_at,
+          owner:profiles(
+            avatar_url,
+            username,
+            full_name
+          )
+        ''')
         .order('created_at', ascending: false)
         .range(from, to);
+
+    return (data as List)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
+  }
+
+  Future<List<Map<String, dynamic>>> searchByTitle({
+    required String query,
+    int limit = 50,
+  }) async {
+    final q = query.trim();
+    if (q.isEmpty) return [];
+
+    final data = await supabase
+        .from(_table)
+        .select('''
+          id,
+          title,
+          owner_id,
+          preview_url,
+          created_at,
+          owner:profiles(
+            avatar_url,
+            username,
+            full_name
+          )
+        ''')
+        .ilike('title', '%$q%')
+        .order('created_at', ascending: false)
+        .limit(limit);
+
+    return (data as List)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
   }
 }
